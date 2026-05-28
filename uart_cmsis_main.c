@@ -1,6 +1,6 @@
 #include "stm32f4xx.h"                                        // STM32F4 donanım tanımları
 
-#define uint32_t SystemCoreClock = 168000000;                 // Sistem saat frekansını tanımla (168MHz)
+uint32_t SystemCoreClock = 168000000;                        // Sistem saat frekansını tanımla (168MHz)
 
 void clock_init(void) {
     // 1. HSE'yi aktif et

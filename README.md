@@ -24,9 +24,16 @@ STM32 programlamaya yeni başlayanların donanımın çalışma mantığını **
 | **DAC** | Dijital-Analog dönüşüm, analog sinyal üretimi | ✅ Hazır |
 | **PWM** | Darbe genişlik modülasyonu, motor kontrolü | ✅ Hazır |
 | **UART** | Seri haberleşme protokolü | ✅ Hazır |
-| **SPI** | Seri Peripheral Interface | ✅ Hazır |
-| **I2C** | Inter-Integrated Circuit | ✅ Hazır |
-| **Timer** | Zamanlayıcı işlemleri | ✅ Hazır |
+| **SPI** | Seri Peripheral Interface, ILI9341 TFT sürücüsü | ✅ Hazır |
+| **I2C** | Inter-Integrated Circuit, master write/read | ✅ Hazır |
+| **Timer** | Zamanlayıcı işlemleri, 1 Hz IRQ | ✅ Hazır |
+| **SysTick** | Sistem zamanlayıcısı, ms/us gecikme fonksiyonları | 🔜 Yakında |
+| **DMA** | Direct Memory Access, UART ve ADC transferleri | 🔜 Yakında |
+| **Watchdog** | IWDG / WWDG bağımsız ve pencere watchdog | 🔜 Yakında |
+| **RTC** | Gerçek zamanlı saat, alarm ve zaman damgası | 🔜 Yakında |
+| **Flash** | Dahili Flash okuma/yazma, sector silme | 🔜 Yakında |
+| **Low Power** | Sleep, Stop ve Standby güç tasarrufu modları | 🔜 Yakında |
+| **CAN** | Controller Area Network haberleşme protokolü | 🔜 Yakında |
 
 ## 🛠️ Gereksinimler
 

@@ -77,6 +77,8 @@ Ek notlar:
 //------------------- ADC1 Yapılandırması -------------------//
 void adc1_init(void) {
     RCC->APB2ENR |= RCC_APB2ENR_ADC1EN;                // ADC1 clock'unu aktif et
+    ADC->CCR &= ~ADC_CCR_ADCPRE;                       // Prescaler bitlerini temizle
+    ADC->CCR |=  ADC_CCR_ADCPRE_0;                     // ADCCLK = PCLK2 / 4 = 84 / 4 = 21 MHz (max 36 MHz)
     ADC1->CR1 = 0;                                     // CR1 varsayılan (8-bit çözünürlük yok, default 12-bit)
     ADC1->CR2 = ADC_CR2_ADON;                          // ADC1'i aktif et
     ADC1->SMPR2 |= (3 << (3 * 0));                     // Kanal 0 için örnekleme süresi = 56 cycle

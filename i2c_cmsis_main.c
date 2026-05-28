@@ -10,8 +10,10 @@ void I2C1_Init(void)
     GPIOB->MODER   &= ~(0xF << (6 * 2));              // PB6 ve PB7'nin MODER bitlerini temizle [Binary: 0000 0000 0000 1111 0000 0000 0000 0000, Hex: 0x0000F000] (PB6 ve PB7'nin 4 bitlik alanı temizlenir)
     GPIOB->MODER   |= (0xA << (6 * 2));               // PB6 ve PB7'yi alternatif fonksiyon moduna ayarla (AF mode) [Binary: 0000 0000 0000 1010 0000 0000 0000 0000, Hex: 0x0000A000] (PB6 ve PB7'yi AF moduna alır: PB6=10, PB7=10)
     GPIOB->OTYPER  |= (0x3 << 6);                     // PB6 ve PB7'yi open-drain yap [Binary: 0000 0000 0000 0000 0000 0000 1100 0000, Hex: 0x000000C0]
-    GPIOB->OSPEEDR |= (0xF << (6 * 2));               // PB6 ve PB7'yi yüksek hız moduna ayarla [Binary: 0000 0000 0000 1111 0000 0000 0000 0000, Hex: 0x0000F000]
-    GPIOB->PUPDR   |= (0x5 << (6 * 2));               // PB6 ve PB7'ye pull-up uygula [Binary: 0000 0000 0000 0101 0000 0000 0000 0000, Hex: 0x00005000]
+    GPIOB->OSPEEDR &= ~(0xF << (6 * 2));              // PB6 ve PB7 hız bitlerini temizle
+    GPIOB->OSPEEDR |=  (0xF << (6 * 2));              // PB6 ve PB7'yi yüksek hız moduna ayarla [Binary: 0000 0000 0000 1111 0000 0000 0000 0000, Hex: 0x0000F000]
+    GPIOB->PUPDR   &= ~(0xF << (6 * 2));              // PB6 ve PB7 pull bitlerini temizle
+    GPIOB->PUPDR   |=  (0x5 << (6 * 2));              // PB6 ve PB7'ye pull-up uygula [Binary: 0000 0000 0000 0101 0000 0000 0000 0000, Hex: 0x00005000]
 
     GPIOB->AFR[0] |= (0x44 << (6 * 4));             // PB6 ve PB7'yi AF4 (I2C1) olarak ayarla [Binary: 0100 0100 0000 0000 0000 0000 0000 0000, Hex: 0x44000000]
 
