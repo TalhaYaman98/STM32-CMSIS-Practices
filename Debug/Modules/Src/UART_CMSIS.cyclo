@@ -1,0 +1,5 @@
+../Modules/Src/UART_CMSIS.c:5:6:GPIO_UART_Init	1
+../Modules/Src/UART_CMSIS.c:51:6:USART2_Init	1
+../Modules/Src/UART_CMSIS.c:98:6:USART2_Send_Char	2
+../Modules/Src/UART_CMSIS.c:103:6:USART2_Read_Char	2
+../Modules/Src/UART_CMSIS.c:108:6:USART2_Send_String	2

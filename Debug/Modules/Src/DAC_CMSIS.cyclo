@@ -1,0 +1,4 @@
+../Modules/Src/DAC_CMSIS.c:4:6:GPIO_PA4_Analog_Init	1
+../Modules/Src/DAC_CMSIS.c:9:6:DAC_Init	1
+../Modules/Src/DAC_CMSIS.c:15:6:DAC_Write	2
+../Modules/Src/DAC_CMSIS.c:20:6:DAC_Set_Voltage	1

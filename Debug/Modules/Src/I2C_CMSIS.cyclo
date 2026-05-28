@@ -1,0 +1,5 @@
+../Modules/Src/I2C_CMSIS.c:3:6:I2C1_Init	1
+../Modules/Src/I2C_CMSIS.c:32:6:I2C1_Write	6
+../Modules/Src/I2C_CMSIS.c:54:6:I2C1_WriteByte	1
+../Modules/Src/I2C_CMSIS.c:61:6:I2C1_ReadByte	8
+../Modules/Src/I2C_CMSIS.c:85:6:I2C1_ReadBytes	10

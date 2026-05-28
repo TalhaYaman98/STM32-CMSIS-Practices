@@ -3,7 +3,7 @@
 [![STM32F4](https://img.shields.io/badge/STM32-F4%20Discovery-orange.svg)](https://www.st.com/en/evaluation-tools/stm32f4discovery.html)
 [![CMSIS](https://img.shields.io/badge/CMSIS-Core%20%26%20Device-green.svg)](https://arm-software.github.io/CMSIS_5/Core/html/index.html)
 
-Bu repository, STM32 mikrodenetleyiciler ile **HAL kütüphanesi kullanmadan**, doğrudan **CMSIS (Cortex Microcontroller Software Interface Standard)** tabanlı programlama örneklerini içerir. 
+Bu repository, STM32 mikrodenetleyiciler ile **HAL kütüphanesine bağımlılığı minimuma indirerek**, doğrudan **CMSIS (Cortex Microcontroller Software Interface Standard)** tabanlı programlama örneklerini içerir.
 
 ## 🎯 Amaç
 
@@ -16,78 +16,92 @@ STM32 programlamaya yeni başlayanların donanımın çalışma mantığını **
 
 ## 📚 Mevcut Örnekler
 
-| Konu | Açıklama | Durum |
-|------|----------|-------|
-| **GPIO** | Dijital giriş/çıkış kontrolü, LED kontrolü, buton okuma | ✅ Hazır |
-| **EXTI** | Harici kesme işlemleri, interrupt handling | ✅ Hazır |
-| **ADC** | Analog-Dijital dönüşüm, sensör okuma | ✅ Hazır |
-| **DAC** | Dijital-Analog dönüşüm, analog sinyal üretimi | ✅ Hazır |
-| **PWM** | Darbe genişlik modülasyonu, motor kontrolü | ✅ Hazır |
-| **UART** | Seri haberleşme protokolü | ✅ Hazır |
-| **SPI** | Seri Peripheral Interface, ILI9341 TFT sürücüsü | ✅ Hazır |
-| **I2C** | Inter-Integrated Circuit, master write/read | ✅ Hazır |
-| **Timer** | Zamanlayıcı işlemleri, 1 Hz IRQ | ✅ Hazır |
-| **SysTick** | Sistem zamanlayıcısı, ms/us gecikme fonksiyonları | 🔜 Yakında |
-| **DMA** | Direct Memory Access, UART ve ADC transferleri | 🔜 Yakında |
-| **Watchdog** | IWDG / WWDG bağımsız ve pencere watchdog | 🔜 Yakında |
-| **RTC** | Gerçek zamanlı saat, alarm ve zaman damgası | 🔜 Yakında |
-| **Flash** | Dahili Flash okuma/yazma, sector silme | 🔜 Yakında |
-| **Low Power** | Sleep, Stop ve Standby güç tasarrufu modları | 🔜 Yakında |
-| **CAN** | Controller Area Network haberleşme protokolü | 🔜 Yakında |
+| Konu | Dosyalar | Açıklama | Durum |
+|------|----------|----------|-------|
+| **Clock** | `Clock_CMSIS.c/h` | HSE + PLL ile 168 MHz sistem saati | ✅ Hazır |
+| **GPIO** | `GPIO_Interrupt_CMSIS.c/h` | Dijital giriş/çıkış, LED kontrolü, buton okuma | ✅ Hazır |
+| **EXTI** | `GPIO_Interrupt_CMSIS.c/h` | Harici kesme işlemleri, interrupt handling | ✅ Hazır |
+| **ADC** | `ADC_CMSIS.c/h` | Analog-Dijital dönüşüm, PA0 kanal okuma | ✅ Hazır |
+| **DAC** | `DAC_CMSIS.c/h` | Dijital-Analog dönüşüm, analog sinyal üretimi | ✅ Hazır |
+| **PWM** | `PWM_CMSIS.c/h` | TIM4 ile darbe genişlik modülasyonu | ✅ Hazır |
+| **Timer** | `Timer_CMSIS.c/h` | TIM2 ile 1 Hz güncelleme kesmesi | ✅ Hazır |
+| **UART** | `UART_CMSIS.c/h` | USART2 seri haberleşme, TX/RX | ✅ Hazır |
+| **I2C** | `I2C_CMSIS.c/h` | I2C1 master write/read (tek ve çok byte) | ✅ Hazır |
+| **SPI** | — | Seri Peripheral Interface | 🔜 Yakında |
+| **SysTick** | — | Sistem zamanlayıcısı, ms/us gecikme fonksiyonları | 🔜 Yakında |
+| **DMA** | — | Direct Memory Access, UART ve ADC transferleri | 🔜 Yakında |
+| **Watchdog** | — | IWDG / WWDG bağımsız ve pencere watchdog | 🔜 Yakında |
+| **RTC** | — | Gerçek zamanlı saat, alarm ve zaman damgası | 🔜 Yakında |
+| **Flash** | — | Dahili Flash okuma/yazma, sector silme | 🔜 Yakında |
+| **Low Power** | — | Sleep, Stop ve Standby güç tasarrufu modları | 🔜 Yakında |
+| **CAN** | — | Controller Area Network haberleşme protokolü | 🔜 Yakında |
 
-## 🛠️ Gereksinimler
+## 🗂️ Proje Yapısı
 
-### Donanım
-- **STM32F4 Discovery Kit** (STM32F407VGT6)
-- USB Kablo (programlama için)
-- Breadboard ve jumper kablolar (opsiyonel)
-
-### Yazılım
-- **STM32CubeIDE** (önerilen) veya **Keil µVision**
-- **ST-Link Utility** (debug için)
-- **Git** (repository klonlama için)
-
-## 🚀 Kurulum ve Çalıştırma
-
-### 1. Repository'yi Klonlayın
-```bash
-git clone https://github.com/TalhaYaman98/STM32-CMSIS-Examples.git
-cd STM32-CMSIS-Examples
+```
+STM32-CMSIS-Examples/
+├── main.c                        # Ana program girişi
+├── HeaderForAll.h                # Modül seçim başlığı (merkezi include)
+├── Clock_CMSIS.c / .h            # Sistem saati (HSE + PLL, 168 MHz)
+├── ADC_CMSIS.c / .h              # ADC — PA0 analog okuma
+├── DAC_CMSIS.c / .h              # DAC — PA4 analog çıkış
+├── PWM_CMSIS.c / .h              # PWM — TIM4 CH1 (PD12)
+├── Timer_CMSIS.c / .h            # Timer — TIM2 1 Hz IRQ (PD12 LED)
+├── UART_CMSIS.c / .h             # UART — USART2 (PA2/PA3)
+├── GPIO_Interrupt_CMSIS.c / .h   # GPIO + EXTI0 (PA0 buton, PD12 LED)
+└── I2C_CMSIS.c / .h              # I2C1 master (PB6/PB7)
 ```
 
-### 2. STM32CubeIDE'de Açın
-1. STM32CubeIDE'yi açın
-2. `File -> Import -> Existing Projects into Workspace`
-3. Klonladığınız klasörü seçin
-4. İstediğiniz örnek projeyi seçin
+### HeaderForAll.h — Modül Seçimi
 
-### 3. CMSIS Kütüphanesini Yapılandırın
-CMSIS kütüphanesini projelere dahil etmek için aşağıdaki adımları takip edin:
+Tüm modüller `HeaderForAll.h` içinden merkezi olarak yönetilir. Kullanmak istediğiniz modülü `1` yapın, diğerlerini `0` bırakın:
 
-1. **Drivers klasörünü kopyalayın**
-   - Repository'deki `Drivers` klasörünü projenizin kök dizinine kopyalayın
+```c
+#define ADC_CMSIS             0
+#define DAC_CMSIS             0
+#define PWM_CMSIS             0
+#define GPIO_Interrupt_CMSIS  0
+#define TIMER_CMSIS           0
+#define UART_CMSIS            0
+#define I2C_CMSIS             0
+```
 
-2. **Include Paths Ayarları**
-   - Proje üzerine sağ tıklayın ve `Properties` seçin
-   - `C/C++ BUILD -> Settings -> Tool settings -> MCU/MPU GCC Compiler -> Include paths`
-   - Aşağıdaki yolları ekleyin:
-     ```
-     ../Drivers/CMSIS/Include
-     ../Drivers/CMSIS/Device/ST/STM32F4xx/Include
-     ```
+`main.c` içindeki başlatma ve döngü kodları bu makrolara göre koşullu derleme (`#if`) ile aktif hale gelir. Clock modülü her zaman dahildir.
 
-3. **Preprocessor Defines Ayarları**
-   - `C/C++ BUILD -> Settings -> Tool settings -> MCU/MPU GCC Compiler -> Preprocessor`
-   - Aşağıdaki tanımlamaları ekleyin:
-     ```
-     STM32F407xx
-     ARM_MATH_CM4
-     ```
+## 📌 Pin Haritası
 
-### 4. Derleyin ve Yükleyin
-1. Projeyi seçin ve `Ctrl+B` ile derleyin
-2. STM32F4 Discovery kartınızı USB ile bağlayın
-3. `Run -> Debug` ile programı yükleyin ve çalıştırın
+| Modül | Pin | Fonksiyon |
+|-------|-----|-----------|
+| ADC | PA0 | Analog giriş (Kanal 0) |
+| DAC | PA4 | Analog çıkış (Kanal 1) |
+| PWM | PD12 | TIM4 CH1 PWM çıkışı |
+| Timer | PD12 | LED (1 Hz toggle) |
+| UART TX | PA2 | USART2 TX (AF7) |
+| UART RX | PA3 | USART2 RX (AF7) |
+| I2C SCL | PB6 | I2C1 SCL (AF4) |
+| I2C SDA | PB7 | I2C1 SDA (AF4) |
+| EXTI | PA0 | Buton girişi (rising edge) |
+| LED | PD12 | Çıkış (EXTI / Timer) |
+
+## ⏱️ Saat Konfigürasyonu
+
+Tüm örnekler aşağıdaki saat hiyerarşisini kullanır:
+
+| Bus | Frekans | Notlar |
+|-----|---------|--------|
+| SYSCLK | 168 MHz | HSE (8 MHz) + PLL |
+| AHB (HCLK) | 168 MHz | GPIO, DMA |
+| APB2 (PCLK2) | 84 MHz | USART1, ADC, TIM1 |
+| APB1 (PCLK1) | 42 MHz | I2C, USART2, TIM2/4 |
+| Timer clock (APB1 × 2) | 84 MHz | TIM2, TIM4 |
+
+## ⚠️ Önemli Notlar
+
+- Bu örnekler **eğitim amaçlıdır** ve ticari projelerde kullanılmadan önce test edilmelidir
+- **Register seviyesinde** programlama yaptığımız için dikkatli olmak gerekir
+- `main.c` HAL ile oluşturulmuş bir proje iskeletini temel alır; çevresel birim başlatmaları CMSIS ile yapılmaktadır
+- Her modül **bağımsız** çalışacak şekilde tasarlanmıştır
+- **STM32F4 Discovery** kartı için optimize edilmiştir
 
 ## 📚 Faydalı Kaynaklar
 
@@ -96,14 +110,7 @@ CMSIS kütüphanesini projelere dahil etmek için aşağıdaki adımları takip 
 - [CMSIS Documentation](https://arm-software.github.io/CMSIS_5/Core/html/index.html)
 - [STM32 Programming Manual](https://www.st.com/resource/en/programming_manual/pm0214-stm32-cortexm4-mcus-and-mpus-programming-manual-stmicroelectronics.pdf)
 
-## ⚠️ Önemli Notlar
-
-- Bu örnekler **eğitim amaçlıdır** ve ticari projelerde kullanılmadan önce test edilmelidir
-- **Register seviyesinde** programlama yaptığımız için dikkatli olmak gerekir
-- Her örnek **standalone** çalışacak şekilde tasarlanmıştır
-- **STM32F4 Discovery** kartı için optimize edilmiştir
-
-
+---
 
 ⭐ Bu projeyi beğendiyseniz **star** vermeyi unutmayın!
 

@@ -1,0 +1,5 @@
+../Drivers/CMSIS/Include/core_cm4.h:1684:22:__NVIC_EnableIRQ	2
+../Drivers/CMSIS/Include/core_cm4.h:1814:22:__NVIC_SetPriority	2
+../Modules/Src/GPIO_Interrupt_CMSIS.c:4:6:GPIO_Interrupt_Init	1
+../Modules/Src/GPIO_Interrupt_CMSIS.c:64:6:Exti0_Init	1
+../Modules/Src/GPIO_Interrupt_CMSIS.c:119:6:EXTI0_IRQHandler	2

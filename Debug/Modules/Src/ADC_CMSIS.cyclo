@@ -1,0 +1,3 @@
+../Modules/Src/ADC_CMSIS.c:6:6:GPIO_PA0_Analog_Init	1
+../Modules/Src/ADC_CMSIS.c:35:6:ADC1_Init	1
+../Modules/Src/ADC_CMSIS.c:82:10:ADC1_Read	2
