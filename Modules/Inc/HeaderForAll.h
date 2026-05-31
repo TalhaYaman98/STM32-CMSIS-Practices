@@ -13,6 +13,7 @@
 #define TIMER_CMSIS           0
 #define UART_CMSIS            0
 #define I2C_CMSIS             0
+#define SPI_CMSIS             1
 
 /*
   Clock — her zaman dahil
@@ -48,6 +49,10 @@
 
 #if I2C_CMSIS
   #include <I2C_CMSIS.h>
+#endif
+
+#if SPI_CMSIS
+  #include <SPI_CMSIS.h>
 #endif
 
 #endif /* HEADERFORALL_H */

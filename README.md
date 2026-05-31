@@ -27,7 +27,7 @@ STM32 programlamaya yeni başlayanların donanımın çalışma mantığını **
 | **Timer** | `Timer_CMSIS.c/h` | TIM2 ile 1 Hz güncelleme kesmesi | ✅ Hazır |
 | **UART** | `UART_CMSIS.c/h` | USART2 seri haberleşme, TX/RX | ✅ Hazır |
 | **I2C** | `I2C_CMSIS.c/h` | I2C1 master write/read (tek ve çok byte) | ✅ Hazır |
-| **SPI** | — | Seri Peripheral Interface | 🔜 Yakında |
+| **SPI** | `SPI_CMSIS.c/h` | SPI1 master full-duplex TX/RX (PA4–PA7) | ✅ Hazır |
 | **SysTick** | — | Sistem zamanlayıcısı, ms/us gecikme fonksiyonları | 🔜 Yakında |
 | **DMA** | — | Direct Memory Access, UART ve ADC transferleri | 🔜 Yakında |
 | **Watchdog** | — | IWDG / WWDG bağımsız ve pencere watchdog | 🔜 Yakında |
@@ -49,7 +49,8 @@ STM32-CMSIS-Examples/
 ├── Timer_CMSIS.c / .h            # Timer — TIM2 1 Hz IRQ (PD12 LED)
 ├── UART_CMSIS.c / .h             # UART — USART2 (PA2/PA3)
 ├── GPIO_Interrupt_CMSIS.c / .h   # GPIO + EXTI0 (PA0 buton, PD12 LED)
-└── I2C_CMSIS.c / .h              # I2C1 master (PB6/PB7)
+├── I2C_CMSIS.c / .h              # I2C1 master (PB6/PB7)
+└── SPI_CMSIS.c / .h              # SPI1 master full-duplex (PA4/PA5/PA6/PA7)
 ```
 
 ### HeaderForAll.h — Modül Seçimi
@@ -64,6 +65,7 @@ Tüm modüller `HeaderForAll.h` içinden merkezi olarak yönetilir. Kullanmak is
 #define TIMER_CMSIS           0
 #define UART_CMSIS            0
 #define I2C_CMSIS             0
+#define SPI_CMSIS             0
 ```
 
 `main.c` içindeki başlatma ve döngü kodları bu makrolara göre koşullu derleme (`#if`) ile aktif hale gelir. Clock modülü her zaman dahildir.
@@ -82,6 +84,10 @@ Tüm modüller `HeaderForAll.h` içinden merkezi olarak yönetilir. Kullanmak is
 | I2C SDA | PB7 | I2C1 SDA (AF4) |
 | EXTI | PA0 | Buton girişi (rising edge) |
 | LED | PD12 | Çıkış (EXTI / Timer) |
+| SPI CS | PA4 | SPI1 Chip Select (Software) |
+| SPI SCK | PA5 | SPI1 Saat (AF5) |
+| SPI MISO | PA6 | SPI1 Master In Slave Out (AF5) |
+| SPI MOSI | PA7 | SPI1 Master Out Slave In (AF5) |
 
 ## ⏱️ Saat Konfigürasyonu
 
@@ -91,7 +97,7 @@ Tüm örnekler aşağıdaki saat hiyerarşisini kullanır:
 |-----|---------|--------|
 | SYSCLK | 168 MHz | HSE (8 MHz) + PLL |
 | AHB (HCLK) | 168 MHz | GPIO, DMA |
-| APB2 (PCLK2) | 84 MHz | USART1, ADC, TIM1 |
+| APB2 (PCLK2) | 84 MHz | USART1, ADC, SPI1, TIM1 |
 | APB1 (PCLK1) | 42 MHz | I2C, USART2, TIM2/4 |
 | Timer clock (APB1 × 2) | 84 MHz | TIM2, TIM4 |
 
@@ -102,6 +108,7 @@ Tüm örnekler aşağıdaki saat hiyerarşisini kullanır:
 - `main.c` HAL ile oluşturulmuş bir proje iskeletini temel alır; çevresel birim başlatmaları CMSIS ile yapılmaktadır
 - Her modül **bağımsız** çalışacak şekilde tasarlanmıştır
 - **STM32F4 Discovery** kartı için optimize edilmiştir
+- SPI modülünde PA4 hem DAC çıkışı hem CS pini olarak atanmıştır; DAC ve SPI aynı anda kullanılmamalıdır
 
 ## 📚 Faydalı Kaynaklar
 

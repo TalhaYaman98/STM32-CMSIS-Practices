@@ -1,0 +1,7 @@
+../Modules/Src/SPI_CMSIS.c:3:6:GPIO_SPI1_Init	1
+../Modules/Src/SPI_CMSIS.c:82:6:SPI1_Init	1
+../Modules/Src/SPI_CMSIS.c:162:9:SPI1_TransmitReceive	3
+../Modules/Src/SPI_CMSIS.c:212:6:SPI1_Transmit	2
+../Modules/Src/SPI_CMSIS.c:237:6:SPI1_Receive	2
+../Modules/Src/SPI_CMSIS.c:263:6:SPI1_CS_Low	1
+../Modules/Src/SPI_CMSIS.c:284:6:SPI1_CS_High	1

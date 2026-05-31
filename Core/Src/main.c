@@ -124,6 +124,11 @@ int main(void)
 #if I2C_CMSIS
   I2C1_Init();
 #endif
+
+#if SPI_CMSIS
+  GPIO_SPI1_Init();
+  SPI1_Init();
+#endif
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -161,6 +166,16 @@ int main(void)
 
 #if I2C_CMSIS
     /* I2C işlemleri burada */
+#endif
+
+#if SPI_CMSIS
+  uint8_t tx_data[] = {0x9F};          // Örnek komut (JEDEC ID okuma)
+  uint8_t rx_data[3] = {0};
+
+  SPI1_CS_Low();                        // CS aktif et
+  SPI1_Transmit(tx_data, 1);           // Komut gönder
+  SPI1_Receive(rx_data, 3);            // 3 byte oku
+  SPI1_CS_High();                       // CS pasif et
 #endif
   }
   /* USER CODE END 3 */
