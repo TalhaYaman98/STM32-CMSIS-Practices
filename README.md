@@ -28,7 +28,7 @@ STM32 programlamaya yeni başlayanların donanımın çalışma mantığını **
 | **UART** | `UART_CMSIS.c/h` | USART2 seri haberleşme, TX/RX | ✅ Hazır |
 | **I2C** | `I2C_CMSIS.c/h` | I2C1 master write/read (tek ve çok byte) | ✅ Hazır |
 | **SPI** | `SPI_CMSIS.c/h` | SPI1 master full-duplex TX/RX (PA4–PA7) | ✅ Hazır |
-| **SysTick** | — | Sistem zamanlayıcısı, ms/us gecikme fonksiyonları | 🔜 Yakında |
+| **SysTick** | `SysTick_CMSIS.c/h` | ms/us gecikme, timestamp (GetTick) | ✅ Hazır |
 | **DMA** | — | Direct Memory Access, UART ve ADC transferleri | 🔜 Yakında |
 | **Watchdog** | — | IWDG / WWDG bağımsız ve pencere watchdog | 🔜 Yakında |
 | **RTC** | — | Gerçek zamanlı saat, alarm ve zaman damgası | 🔜 Yakında |
@@ -41,6 +41,7 @@ STM32 programlamaya yeni başlayanların donanımın çalışma mantığını **
 ```
 STM32-CMSIS-Examples/
 ├── main.c                        # Ana program girişi
+├── stm32f4xx_it.c                # Interrupt handler'ları (SysTick_Handler dahil)
 ├── HeaderForAll.h                # Modül seçim başlığı (merkezi include)
 ├── Clock_CMSIS.c / .h            # Sistem saati (HSE + PLL, 168 MHz)
 ├── ADC_CMSIS.c / .h              # ADC — PA0 analog okuma
@@ -50,7 +51,8 @@ STM32-CMSIS-Examples/
 ├── UART_CMSIS.c / .h             # UART — USART2 (PA2/PA3)
 ├── GPIO_Interrupt_CMSIS.c / .h   # GPIO + EXTI0 (PA0 buton, PD12 LED)
 ├── I2C_CMSIS.c / .h              # I2C1 master (PB6/PB7)
-└── SPI_CMSIS.c / .h              # SPI1 master full-duplex (PA4/PA5/PA6/PA7)
+├── SPI_CMSIS.c / .h              # SPI1 master full-duplex (PA4/PA5/PA6/PA7)
+└── SysTick_CMSIS.c / .h          # SysTick — ms/us gecikme, GetTick timestamp
 ```
 
 ### HeaderForAll.h — Modül Seçimi
@@ -66,6 +68,7 @@ Tüm modüller `HeaderForAll.h` içinden merkezi olarak yönetilir. Kullanmak is
 #define UART_CMSIS            0
 #define I2C_CMSIS             0
 #define SPI_CMSIS             0
+#define SYSTICK_CMSIS         0
 ```
 
 `main.c` içindeki başlatma ve döngü kodları bu makrolara göre koşullu derleme (`#if`) ile aktif hale gelir. Clock modülü her zaman dahildir.
@@ -83,7 +86,7 @@ Tüm modüller `HeaderForAll.h` içinden merkezi olarak yönetilir. Kullanmak is
 | I2C SCL | PB6 | I2C1 SCL (AF4) |
 | I2C SDA | PB7 | I2C1 SDA (AF4) |
 | EXTI | PA0 | Buton girişi (rising edge) |
-| LED | PD12 | Çıkış (EXTI / Timer) |
+| LED | PD12 | Çıkış (EXTI / Timer / SysTick) |
 | SPI CS | PA4 | SPI1 Chip Select (Software) |
 | SPI SCK | PA5 | SPI1 Saat (AF5) |
 | SPI MISO | PA6 | SPI1 Master In Slave Out (AF5) |
@@ -96,10 +99,11 @@ Tüm örnekler aşağıdaki saat hiyerarşisini kullanır:
 | Bus | Frekans | Notlar |
 |-----|---------|--------|
 | SYSCLK | 168 MHz | HSE (8 MHz) + PLL |
-| AHB (HCLK) | 168 MHz | GPIO, DMA |
+| AHB (HCLK) | 168 MHz | GPIO, DMA, SysTick |
 | APB2 (PCLK2) | 84 MHz | USART1, ADC, SPI1, TIM1 |
 | APB1 (PCLK1) | 42 MHz | I2C, USART2, TIM2/4 |
 | Timer clock (APB1 × 2) | 84 MHz | TIM2, TIM4 |
+| SysTick clock | 168 MHz | AHB kaynağı seçili (CLKSOURCE = 1) |
 
 ## ⚠️ Önemli Notlar
 
@@ -109,6 +113,7 @@ Tüm örnekler aşağıdaki saat hiyerarşisini kullanır:
 - Her modül **bağımsız** çalışacak şekilde tasarlanmıştır
 - **STM32F4 Discovery** kartı için optimize edilmiştir
 - SPI modülünde PA4 hem DAC çıkışı hem CS pini olarak atanmıştır; DAC ve SPI aynı anda kullanılmamalıdır
+- SysTick modülü HAL ile birlikte çalışır; `stm32f4xx_it.c` içindeki `SysTick_Handler`'a `tick_count++` eklenmelidir
 
 ## 📚 Faydalı Kaynaklar
 

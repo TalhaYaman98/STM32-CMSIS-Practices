@@ -129,6 +129,20 @@ int main(void)
   GPIO_SPI1_Init();
   SPI1_Init();
 #endif
+
+#if SYSTICK_CMSIS
+  SysTick_Init();
+
+  // PD12 GPIO Init (SysTick örneğini görmek için)
+  RCC->AHB1ENR |= RCC_AHB1ENR_GPIODEN;          // GPIOD clock enable
+  (void)RCC->AHB1ENR;                            // Bus senkronizasyonu
+  GPIOD->MODER  &= ~(3 << (12 * 2));             // PD12 mod bitlerini temizle
+  GPIOD->MODER  |=  (1 << (12 * 2));             // PD12 → Output (01)
+  GPIOD->OTYPER &= ~(1 << 12);                   // Push-pull
+  GPIOD->OSPEEDR|=  (3 << (12 * 2));             // Very high speed
+  GPIOD->PUPDR  &= ~(3 << (12 * 2));             // No pull
+  GPIOD->BSRR    =  (1 << (12 + 16));            // Başlangıçta LED kapalı
+#endif
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -176,6 +190,25 @@ int main(void)
   SPI1_Transmit(tx_data, 1);           // Komut gönder
   SPI1_Receive(rx_data, 3);            // 3 byte oku
   SPI1_CS_High();                       // CS pasif et
+#endif
+
+#if SYSTICK_CMSIS
+  // Örnek 1: delay_ms kullanımı
+  GPIOD->BSRR = (1 << 12);          // PD12 LED aç
+  delay_ms(500);                     // 500 ms bekle
+  GPIOD->BSRR = (1 << (12 + 16));   // PD12 LED kapat
+  delay_ms(500);                     // 500 ms bekle
+
+  // Örnek 2: delay_us kullanımı
+  GPIOD->BSRR = (1 << 12);          // PD12 LED aç
+  delay_us(100);                     // 100 µs bekle
+  GPIOD->BSRR = (1 << (12 + 16));   // PD12 LED kapat
+  delay_us(100);                     // 100 µs bekle
+
+  // Örnek 3: GetTick ile non-blocking zaman ölçümü
+  uint32_t start = GetTick();
+  // ... başka işler ...
+  uint32_t elapsed = GetTick() - start;  // Geçen süre (ms)
 #endif
   }
   /* USER CODE END 3 */
