@@ -29,7 +29,7 @@ STM32 programlamaya yeni başlayanların donanımın çalışma mantığını **
 | **I2C** | `I2C_CMSIS.c/h` | I2C1 master write/read (tek ve çok byte) | ✅ Hazır |
 | **SPI** | `SPI_CMSIS.c/h` | SPI1 master full-duplex TX/RX (PA4–PA7) | ✅ Hazır |
 | **SysTick** | `SysTick_CMSIS.c/h` | ms/us gecikme, timestamp (GetTick) | ✅ Hazır |
-| **DMA** | — | Direct Memory Access, UART ve ADC transferleri | 🔜 Yakında |
+| **DMA** | `DMA_CMSIS.c/h` | DMA1 UART TX, DMA2 ADC circular transfer | ✅ Hazır |
 | **Watchdog** | — | IWDG / WWDG bağımsız ve pencere watchdog | 🔜 Yakında |
 | **RTC** | — | Gerçek zamanlı saat, alarm ve zaman damgası | 🔜 Yakında |
 | **Flash** | — | Dahili Flash okuma/yazma, sector silme | 🔜 Yakında |
@@ -52,7 +52,8 @@ STM32-CMSIS-Examples/
 ├── GPIO_Interrupt_CMSIS.c / .h   # GPIO + EXTI0 (PA0 buton, PD12 LED)
 ├── I2C_CMSIS.c / .h              # I2C1 master (PB6/PB7)
 ├── SPI_CMSIS.c / .h              # SPI1 master full-duplex (PA4/PA5/PA6/PA7)
-└── SysTick_CMSIS.c / .h          # SysTick — ms/us gecikme, GetTick timestamp
+├── SysTick_CMSIS.c / .h          # SysTick — ms/us gecikme, GetTick timestamp
+└── DMA_CMSIS.c / .h              # DMA — UART TX (DMA1 S6 CH4), ADC (DMA2 S0 CH0)
 ```
 
 ### HeaderForAll.h — Modül Seçimi
@@ -69,9 +70,12 @@ Tüm modüller `HeaderForAll.h` içinden merkezi olarak yönetilir. Kullanmak is
 #define I2C_CMSIS             0
 #define SPI_CMSIS             0
 #define SYSTICK_CMSIS         0
+#define DMA_CMSIS             0
 ```
 
 `main.c` içindeki başlatma ve döngü kodları bu makrolara göre koşullu derleme (`#if`) ile aktif hale gelir. Clock modülü her zaman dahildir.
+
+> ⚠️ DMA modülü UART ve ADC modüllerine bağımlıdır. `DMA_CMSIS` aktifken `ADC_CMSIS` ve `UART_CMSIS` de `1` yapılmalıdır.
 
 ## 📌 Pin Haritası
 
@@ -114,6 +118,7 @@ Tüm örnekler aşağıdaki saat hiyerarşisini kullanır:
 - **STM32F4 Discovery** kartı için optimize edilmiştir
 - SPI modülünde PA4 hem DAC çıkışı hem CS pini olarak atanmıştır; DAC ve SPI aynı anda kullanılmamalıdır
 - SysTick modülü HAL ile birlikte çalışır; `stm32f4xx_it.c` içindeki `SysTick_Handler`'a `tick_count++` eklenmelidir
+- DMA modülü UART ve ADC modüllerine bağımlıdır; birlikte aktif edilmelidir
 
 ## 📚 Faydalı Kaynaklar
 

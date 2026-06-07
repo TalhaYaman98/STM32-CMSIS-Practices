@@ -1,0 +1,4 @@
+../Modules/Src/DMA_CMSIS.c:4:6:DMA_UART_Init	2
+../Modules/Src/DMA_CMSIS.c:93:6:DMA_UART_Transmit	2
+../Modules/Src/DMA_CMSIS.c:143:6:DMA_ADC_Init	2
+../Modules/Src/DMA_CMSIS.c:223:6:DMA_ADC_Start	2

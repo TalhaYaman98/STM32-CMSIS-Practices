@@ -6,15 +6,16 @@
   Aktif etmek istediğin modülü 1 yap, diğerlerini 0 bırak.
   Aynı anda birden fazla modül aktif edilebilir.
 */
-#define ADC_CMSIS             0
+#define ADC_CMSIS             1
 #define DAC_CMSIS             0
 #define PWM_CMSIS             0
 #define GPIO_Interrupt_CMSIS  0
 #define TIMER_CMSIS           0
-#define UART_CMSIS            0
+#define UART_CMSIS            1
 #define I2C_CMSIS             0
 #define SPI_CMSIS             0
-#define SYSTICK_CMSIS         1
+#define SYSTICK_CMSIS         0
+#define DMA_CMSIS             1 // Bağımlılıklar: ADC_CMSIS, UART_CMSIS
 
 /*
   Clock — her zaman dahil
@@ -57,7 +58,11 @@
 #endif
 
 #if SYSTICK_CMSIS
-  #include "SYSTICK_CMSIS.h"
+  #include <SYSTICK_CMSIS.h>
+#endif
+
+#if DMA_CMSIS
+  #include <DMA_CMSIS.h>
 #endif
 
 #endif /* HEADERFORALL_H */

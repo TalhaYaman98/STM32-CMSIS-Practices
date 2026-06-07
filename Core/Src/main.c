@@ -143,6 +143,24 @@ int main(void)
   GPIOD->PUPDR  &= ~(3 << (12 * 2));             // No pull
   GPIOD->BSRR    =  (1 << (12 + 16));            // Başlangıçta LED kapalı
 #endif
+
+#if DMA_CMSIS
+  // UART DMA örneği
+//  GPIO_UART_Init();
+//  USART2_Init();
+  DMA_UART_Init();
+
+  uint8_t msg[] = "DMA ile UART gonderimi!\r\n";
+  DMA_UART_Transmit(msg, sizeof(msg) - 1);
+
+  // ADC DMA örneği
+//  GPIO_PA0_Analog_Init();
+//  ADC1_Init();
+  DMA_ADC_Init();
+
+  uint16_t adc_buf[10] = {0};
+  DMA_ADC_Start(adc_buf, 10);
+#endif
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -209,6 +227,12 @@ int main(void)
   uint32_t start = GetTick();
   // ... başka işler ...
   uint32_t elapsed = GetTick() - start;  // Geçen süre (ms)
+#endif
+
+#if DMA_CMSIS
+  // adc_buf[] sürekli güncelleniyor, CPU serbest
+  // UART transferi tamamlandıysa yeni mesaj gönderilebilir:
+  // if(DMA1->HISR & DMA_HISR_TCIF6) { DMA_UART_Transmit(...); }
 #endif
   }
   /* USER CODE END 3 */
