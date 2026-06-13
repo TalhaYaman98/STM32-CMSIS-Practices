@@ -33,7 +33,9 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
+#if WATCHDOG_CMSIS
+#define WDG_TEST_SELECT   4   /* <-- Test numarasını buradan değiştir (1-4) */
+#endif
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -44,7 +46,11 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+#if WATCHDOG_CMSIS
+volatile uint8_t wwdg_current = 0;
+volatile uint32_t reset_reason = 0;
+volatile uint8_t  test_a_locked = 0;   /* TEST A için: kilitlenme durumu göstergesi */
+#endif
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -161,6 +167,43 @@ int main(void)
   uint16_t adc_buf[10] = {0};
   DMA_ADC_Start(adc_buf, 10);
 #endif
+
+#if WATCHDOG_CMSIS
+  /* Debug sırasında watchdog'ların durmasını sağla */
+  DBGMCU->APB1FZ |= DBGMCU_APB1_FZ_DBG_IWDG_STOP | DBGMCU_APB1_FZ_DBG_WWDG_STOP;
+
+  /* Reset sebebini oku ve Watch'tan izle: reset_reason */
+  reset_reason = RCC->CSR;
+  RCC->CSR |= RCC_CSR_RMVF;   /* Flag'leri temizle (sonraki teste hazırlık) */
+
+  #if (WDG_TEST_SELECT == 1)
+    /* TEST A: IWDG init — IWDG_clk = 32000/64 = 500 Hz, RLR=2499 -> ~5 sn timeout */
+    IWDG_Init(4, 2499);
+
+  #elif (WDG_TEST_SELECT == 2)
+    /* TEST B1: WWDG init — refresh while döngüsünde hemen pencere ihlali yapacak */
+    WWDG_Init(0x7F, 0x5F, 3);
+
+  #elif (WDG_TEST_SELECT == 3)
+    /* TEST B2: WWDG init — refresh hiç çağrılmayacak, timeout reseti beklenecek */
+    WWDG_Init(0x7F, 0x5F, 3);
+
+  #elif (WDG_TEST_SELECT == 4)
+    /* TEST B3: WWDG init — pencere içinde doğru refresh yapılacak */
+    WWDG_Init(0x7F, 0x5F, 3);
+
+    // PD12 GPIO Init
+    RCC->AHB1ENR |= RCC_AHB1ENR_GPIODEN;          // GPIOD clock enable
+    (void)RCC->AHB1ENR;                            // Bus senkronizasyonu
+    GPIOD->MODER  &= ~(3 << (12 * 2));             // PD12 mod bitlerini temizle
+    GPIOD->MODER  |=  (1 << (12 * 2));             // PD12 → Output (01)
+    GPIOD->OTYPER &= ~(1 << 12);                   // Push-pull
+    GPIOD->OSPEEDR|=  (3 << (12 * 2));             // Very high speed
+    GPIOD->PUPDR  &= ~(3 << (12 * 2));             // No pull
+    GPIOD->BSRR    =  (1 << (12 + 16));            // Başlangıçta LED kapalı
+
+  #endif
+#endif
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -233,6 +276,45 @@ int main(void)
   // adc_buf[] sürekli güncelleniyor, CPU serbest
   // UART transferi tamamlandıysa yeni mesaj gönderilebilir:
   // if(DMA1->HISR & DMA_HISR_TCIF6) { DMA_UART_Transmit(...); }
+#endif
+
+#if WATCHDOG_CMSIS
+
+  #if (WDG_TEST_SELECT == 1)
+    /* TEST A: 3. saniyede kasıtlı kilitlenme */
+    static uint32_t test_a_counter = 0;
+
+    if(!test_a_locked){
+        IWDG_Refresh();
+        HAL_Delay(1000);
+        test_a_counter++;
+
+        if(test_a_counter == 3){
+            test_a_locked = 1;   /* Watch'tan bu değişimi gözlemleyebilirsin */
+            while(1){
+                __NOP();          /* IWDG_Refresh çağrılmıyor -> ~2 sn sonra reset */
+            }
+        }
+    }
+
+  #elif (WDG_TEST_SELECT == 2)
+    /* TEST B1: Sayaç hâlâ W(0x5F)'nin üzerinde (0x7F), refresh -> ANINDA RESET */
+    WWDG_Refresh(0x7F);
+    while(1){ __NOP(); }   /* Reset olmazsa buraya takılı kalır (hata durumu) */
+
+  #elif (WDG_TEST_SELECT == 3)
+    /* TEST B2: Refresh çağrılmıyor, ~50 ms içinde timeout reseti bekleniyor */
+    __NOP();
+
+  #elif (WDG_TEST_SELECT == 4)
+    wwdg_current = WWDG->CR & WWDG_CR_T;
+
+    if(wwdg_current <= 0x5F){
+        WWDG_Refresh(0x7F);
+        GPIOD->ODR ^= (1 << 12);
+    }
+  #endif
+
 #endif
   }
   /* USER CODE END 3 */

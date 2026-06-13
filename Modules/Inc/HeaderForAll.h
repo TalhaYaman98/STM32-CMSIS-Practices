@@ -6,16 +6,18 @@
   Aktif etmek istediğin modülü 1 yap, diğerlerini 0 bırak.
   Aynı anda birden fazla modül aktif edilebilir.
 */
-#define ADC_CMSIS             1
+#define ADC_CMSIS             0
 #define DAC_CMSIS             0
 #define PWM_CMSIS             0
 #define GPIO_Interrupt_CMSIS  0
 #define TIMER_CMSIS           0
-#define UART_CMSIS            1
+#define UART_CMSIS            0
 #define I2C_CMSIS             0
 #define SPI_CMSIS             0
 #define SYSTICK_CMSIS         0
-#define DMA_CMSIS             1 // Bağımlılıklar: ADC_CMSIS, UART_CMSIS
+#define DMA_CMSIS             0 // Bağımlılıklar: ADC_CMSIS, UART_CMSIS
+#define WATCHDOG_CMSIS		  1
+
 
 /*
   Clock — her zaman dahil
@@ -63,6 +65,10 @@
 
 #if DMA_CMSIS
   #include <DMA_CMSIS.h>
+#endif
+
+#if WATCHDOG_CMSIS
+  #include <Watchdog_CMSIS.h>
 #endif
 
 #endif /* HEADERFORALL_H */

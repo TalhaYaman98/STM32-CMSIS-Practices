@@ -30,7 +30,7 @@ STM32 programlamaya yeni başlayanların donanımın çalışma mantığını **
 | **SPI** | `SPI_CMSIS.c/h` | SPI1 master full-duplex TX/RX (PA4–PA7) | ✅ Hazır |
 | **SysTick** | `SysTick_CMSIS.c/h` | ms/us gecikme, timestamp (GetTick) | ✅ Hazır |
 | **DMA** | `DMA_CMSIS.c/h` | DMA1 UART TX, DMA2 ADC circular transfer | ✅ Hazır |
-| **Watchdog** | — | IWDG / WWDG bağımsız ve pencere watchdog | 🔜 Yakında |
+| **Watchdog** | `Watchdog_CMSIS.c/h` | IWDG (bağımsız) ve WWDG (pencere) reset koruması | ✅ Hazır |
 | **RTC** | — | Gerçek zamanlı saat, alarm ve zaman damgası | 🔜 Yakında |
 | **Flash** | — | Dahili Flash okuma/yazma, sector silme | 🔜 Yakında |
 | **Low Power** | — | Sleep, Stop ve Standby güç tasarrufu modları | 🔜 Yakında |
@@ -53,7 +53,8 @@ STM32-CMSIS-Examples/
 ├── I2C_CMSIS.c / .h              # I2C1 master (PB6/PB7)
 ├── SPI_CMSIS.c / .h              # SPI1 master full-duplex (PA4/PA5/PA6/PA7)
 ├── SysTick_CMSIS.c / .h          # SysTick — ms/us gecikme, GetTick timestamp
-└── DMA_CMSIS.c / .h              # DMA — UART TX (DMA1 S6 CH4), ADC (DMA2 S0 CH0)
+├── DMA_CMSIS.c / .h              # DMA — UART TX (DMA1 S6 CH4), ADC (DMA2 S0 CH0)
+└── Watchdog_CMSIS.c / .h         # IWDG (LSI) ve WWDG (APB1, pencere mantığı)
 ```
 
 ### HeaderForAll.h — Modül Seçimi
@@ -71,6 +72,7 @@ Tüm modüller `HeaderForAll.h` içinden merkezi olarak yönetilir. Kullanmak is
 #define SPI_CMSIS             0
 #define SYSTICK_CMSIS         0
 #define DMA_CMSIS             0
+#define WATCHDOG_CMSIS        0
 ```
 
 `main.c` içindeki başlatma ve döngü kodları bu makrolara göre koşullu derleme (`#if`) ile aktif hale gelir. Clock modülü her zaman dahildir.
@@ -90,7 +92,7 @@ Tüm modüller `HeaderForAll.h` içinden merkezi olarak yönetilir. Kullanmak is
 | I2C SCL | PB6 | I2C1 SCL (AF4) |
 | I2C SDA | PB7 | I2C1 SDA (AF4) |
 | EXTI | PA0 | Buton girişi (rising edge) |
-| LED | PD12 | Çıkış (EXTI / Timer / SysTick) |
+| LED | PD12 | Çıkış (EXTI / Timer / SysTick / Watchdog testi) |
 | SPI CS | PA4 | SPI1 Chip Select (Software) |
 | SPI SCK | PA5 | SPI1 Saat (AF5) |
 | SPI MISO | PA6 | SPI1 Master In Slave Out (AF5) |
@@ -105,9 +107,39 @@ Tüm örnekler aşağıdaki saat hiyerarşisini kullanır:
 | SYSCLK | 168 MHz | HSE (8 MHz) + PLL |
 | AHB (HCLK) | 168 MHz | GPIO, DMA, SysTick |
 | APB2 (PCLK2) | 84 MHz | USART1, ADC, SPI1, TIM1 |
-| APB1 (PCLK1) | 42 MHz | I2C, USART2, TIM2/4 |
+| APB1 (PCLK1) | 42 MHz | I2C, USART2, TIM2/4, WWDG |
 | Timer clock (APB1 × 2) | 84 MHz | TIM2, TIM4 |
 | SysTick clock | 168 MHz | AHB kaynağı seçili (CLKSOURCE = 1) |
+| LSI (IWDG) | ~32 kHz | Sistem clock'undan bağımsız dahili osilatör |
+
+## 🐕 Watchdog Modülü — Detaylar
+
+### IWDG (Independent Watchdog)
+- Clock kaynağı **LSI (~32 kHz)**, sistem clock'undan tamamen bağımsızdır.
+- Bir kez başlatıldıktan sonra **durdurulamaz**, yalnızca reset ile kapanır.
+- `IWDG_Init(prescaler, reload)` ile timeout ayarlanır: `T = (reload+1) / (LSI / prescaler_bölücü)`
+- `IWDG_Refresh()` periyodik olarak çağrılmalı (timeout'tan kısa aralıklarla).
+
+### WWDG (Window Watchdog)
+- Clock kaynağı **APB1**, sistem clock'una bağlıdır.
+- "Pencere" mantığı: refresh hem **çok erken** (sayaç > W) hem **çok geç** (sayaç < 0x40) yapılırsa reset tetiklenir.
+- `WWDG_Init(t_value, w_value, prescaler)` ile pencere ve timeout ayarlanır.
+- `WWDG_Refresh(t_value)` **sadece** `(WWDG->CR & WWDG_CR_T) <= w_value` koşulu sağlandığında çağrılmalıdır.
+- ⚠️ `WDGA` biti set edildikten sonra yazılımla temizlenemez (donanımsal kilit, sadece reset ile kalkar).
+
+### Reset Sebebini Doğrulama
+```c
+uint32_t reset_reason = RCC->CSR;
+if(reset_reason & RCC_CSR_IWDGRSTF) { /* IWDG kaynaklı reset */ }
+if(reset_reason & RCC_CSR_WWDGRSTF) { /* WWDG kaynaklı reset */ }
+RCC->CSR |= RCC_CSR_RMVF;   // Flag'leri temizle
+```
+
+### Debug Notu
+```c
+DBGMCU->APB1FZ |= DBGMCU_APB1_FZ_DBG_IWDG_STOP | DBGMCU_APB1_FZ_DBG_WWDG_STOP;
+```
+Bu satır olmadan, debugger CPU'yu durdurduğunda watchdog sayaçları çalışmaya devam eder ve beklenmedik resetlere yol açar.
 
 ## ⚠️ Önemli Notlar
 
@@ -119,6 +151,7 @@ Tüm örnekler aşağıdaki saat hiyerarşisini kullanır:
 - SPI modülünde PA4 hem DAC çıkışı hem CS pini olarak atanmıştır; DAC ve SPI aynı anda kullanılmamalıdır
 - SysTick modülü HAL ile birlikte çalışır; `stm32f4xx_it.c` içindeki `SysTick_Handler`'a `tick_count++` eklenmelidir
 - DMA modülü UART ve ADC modüllerine bağımlıdır; birlikte aktif edilmelidir
+- WWDG_Refresh() çağrılırken sayaç ve WDGA biti **tek yazma işleminde** birlikte yazılmalıdır; iki adımlı (`&=` sonra `|=`) yazım T6 bitinin anlık 0 olmasına ve anında resete yol açar
 
 ## 📚 Faydalı Kaynaklar
 

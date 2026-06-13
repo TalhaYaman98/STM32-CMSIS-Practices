@@ -1,0 +1,4 @@
+../Modules/Src/Watchdog_CMSIS.c:3:6:IWDG_Init	2
+../Modules/Src/Watchdog_CMSIS.c:79:6:IWDG_Refresh	1
+../Modules/Src/Watchdog_CMSIS.c:111:6:WWDG_Init	1
+../Modules/Src/Watchdog_CMSIS.c:191:6:WWDG_Refresh	1

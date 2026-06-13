@@ -29,3 +29,4 @@
 "./Modules/Src/SYSTICK_CMSIS.o"
 "./Modules/Src/Timer_CMSIS.o"
 "./Modules/Src/UART_CMSIS.o"
+"./Modules/Src/Watchdog_CMSIS.o"
