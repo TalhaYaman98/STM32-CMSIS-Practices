@@ -12,6 +12,7 @@ C_SRCS += \
 ../Modules/Src/GPIO_Interrupt_CMSIS.c \
 ../Modules/Src/I2C_CMSIS.c \
 ../Modules/Src/PWM_CMSIS.c \
+../Modules/Src/RTC_CMSIS.c \
 ../Modules/Src/SPI_CMSIS.c \
 ../Modules/Src/SYSTICK_CMSIS.c \
 ../Modules/Src/Timer_CMSIS.c \
@@ -26,6 +27,7 @@ OBJS += \
 ./Modules/Src/GPIO_Interrupt_CMSIS.o \
 ./Modules/Src/I2C_CMSIS.o \
 ./Modules/Src/PWM_CMSIS.o \
+./Modules/Src/RTC_CMSIS.o \
 ./Modules/Src/SPI_CMSIS.o \
 ./Modules/Src/SYSTICK_CMSIS.o \
 ./Modules/Src/Timer_CMSIS.o \
@@ -40,6 +42,7 @@ C_DEPS += \
 ./Modules/Src/GPIO_Interrupt_CMSIS.d \
 ./Modules/Src/I2C_CMSIS.d \
 ./Modules/Src/PWM_CMSIS.d \
+./Modules/Src/RTC_CMSIS.d \
 ./Modules/Src/SPI_CMSIS.d \
 ./Modules/Src/SYSTICK_CMSIS.d \
 ./Modules/Src/Timer_CMSIS.d \
@@ -54,7 +57,7 @@ Modules/Src/%.o Modules/Src/%.su Modules/Src/%.cyclo: ../Modules/Src/%.c Modules
 clean: clean-Modules-2f-Src
 
 clean-Modules-2f-Src:
-	-$(RM) ./Modules/Src/ADC_CMSIS.cyclo ./Modules/Src/ADC_CMSIS.d ./Modules/Src/ADC_CMSIS.o ./Modules/Src/ADC_CMSIS.su ./Modules/Src/Clock_CMSIS.cyclo ./Modules/Src/Clock_CMSIS.d ./Modules/Src/Clock_CMSIS.o ./Modules/Src/Clock_CMSIS.su ./Modules/Src/DAC_CMSIS.cyclo ./Modules/Src/DAC_CMSIS.d ./Modules/Src/DAC_CMSIS.o ./Modules/Src/DAC_CMSIS.su ./Modules/Src/DMA_CMSIS.cyclo ./Modules/Src/DMA_CMSIS.d ./Modules/Src/DMA_CMSIS.o ./Modules/Src/DMA_CMSIS.su ./Modules/Src/GPIO_Interrupt_CMSIS.cyclo ./Modules/Src/GPIO_Interrupt_CMSIS.d ./Modules/Src/GPIO_Interrupt_CMSIS.o ./Modules/Src/GPIO_Interrupt_CMSIS.su ./Modules/Src/I2C_CMSIS.cyclo ./Modules/Src/I2C_CMSIS.d ./Modules/Src/I2C_CMSIS.o ./Modules/Src/I2C_CMSIS.su ./Modules/Src/PWM_CMSIS.cyclo ./Modules/Src/PWM_CMSIS.d ./Modules/Src/PWM_CMSIS.o ./Modules/Src/PWM_CMSIS.su ./Modules/Src/SPI_CMSIS.cyclo ./Modules/Src/SPI_CMSIS.d ./Modules/Src/SPI_CMSIS.o ./Modules/Src/SPI_CMSIS.su ./Modules/Src/SYSTICK_CMSIS.cyclo ./Modules/Src/SYSTICK_CMSIS.d ./Modules/Src/SYSTICK_CMSIS.o ./Modules/Src/SYSTICK_CMSIS.su ./Modules/Src/Timer_CMSIS.cyclo ./Modules/Src/Timer_CMSIS.d ./Modules/Src/Timer_CMSIS.o ./Modules/Src/Timer_CMSIS.su ./Modules/Src/UART_CMSIS.cyclo ./Modules/Src/UART_CMSIS.d ./Modules/Src/UART_CMSIS.o ./Modules/Src/UART_CMSIS.su ./Modules/Src/Watchdog_CMSIS.cyclo ./Modules/Src/Watchdog_CMSIS.d ./Modules/Src/Watchdog_CMSIS.o ./Modules/Src/Watchdog_CMSIS.su
+	-$(RM) ./Modules/Src/ADC_CMSIS.cyclo ./Modules/Src/ADC_CMSIS.d ./Modules/Src/ADC_CMSIS.o ./Modules/Src/ADC_CMSIS.su ./Modules/Src/Clock_CMSIS.cyclo ./Modules/Src/Clock_CMSIS.d ./Modules/Src/Clock_CMSIS.o ./Modules/Src/Clock_CMSIS.su ./Modules/Src/DAC_CMSIS.cyclo ./Modules/Src/DAC_CMSIS.d ./Modules/Src/DAC_CMSIS.o ./Modules/Src/DAC_CMSIS.su ./Modules/Src/DMA_CMSIS.cyclo ./Modules/Src/DMA_CMSIS.d ./Modules/Src/DMA_CMSIS.o ./Modules/Src/DMA_CMSIS.su ./Modules/Src/GPIO_Interrupt_CMSIS.cyclo ./Modules/Src/GPIO_Interrupt_CMSIS.d ./Modules/Src/GPIO_Interrupt_CMSIS.o ./Modules/Src/GPIO_Interrupt_CMSIS.su ./Modules/Src/I2C_CMSIS.cyclo ./Modules/Src/I2C_CMSIS.d ./Modules/Src/I2C_CMSIS.o ./Modules/Src/I2C_CMSIS.su ./Modules/Src/PWM_CMSIS.cyclo ./Modules/Src/PWM_CMSIS.d ./Modules/Src/PWM_CMSIS.o ./Modules/Src/PWM_CMSIS.su ./Modules/Src/RTC_CMSIS.cyclo ./Modules/Src/RTC_CMSIS.d ./Modules/Src/RTC_CMSIS.o ./Modules/Src/RTC_CMSIS.su ./Modules/Src/SPI_CMSIS.cyclo ./Modules/Src/SPI_CMSIS.d ./Modules/Src/SPI_CMSIS.o ./Modules/Src/SPI_CMSIS.su ./Modules/Src/SYSTICK_CMSIS.cyclo ./Modules/Src/SYSTICK_CMSIS.d ./Modules/Src/SYSTICK_CMSIS.o ./Modules/Src/SYSTICK_CMSIS.su ./Modules/Src/Timer_CMSIS.cyclo ./Modules/Src/Timer_CMSIS.d ./Modules/Src/Timer_CMSIS.o ./Modules/Src/Timer_CMSIS.su ./Modules/Src/UART_CMSIS.cyclo ./Modules/Src/UART_CMSIS.d ./Modules/Src/UART_CMSIS.o ./Modules/Src/UART_CMSIS.su ./Modules/Src/Watchdog_CMSIS.cyclo ./Modules/Src/Watchdog_CMSIS.d ./Modules/Src/Watchdog_CMSIS.o ./Modules/Src/Watchdog_CMSIS.su
 
 .PHONY: clean-Modules-2f-Src
 

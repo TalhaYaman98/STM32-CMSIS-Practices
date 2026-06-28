@@ -25,6 +25,7 @@
 "./Modules/Src/GPIO_Interrupt_CMSIS.o"
 "./Modules/Src/I2C_CMSIS.o"
 "./Modules/Src/PWM_CMSIS.o"
+"./Modules/Src/RTC_CMSIS.o"
 "./Modules/Src/SPI_CMSIS.o"
 "./Modules/Src/SYSTICK_CMSIS.o"
 "./Modules/Src/Timer_CMSIS.o"

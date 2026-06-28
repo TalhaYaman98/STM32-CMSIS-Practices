@@ -1,0 +1,12 @@
+../Drivers/CMSIS/Include/core_cm4.h:1684:22:__NVIC_EnableIRQ	2
+../Drivers/CMSIS/Include/core_cm4.h:1814:22:__NVIC_SetPriority	2
+../Modules/Src/RTC_CMSIS.c:5:16:Dec2BCD	1
+../Modules/Src/RTC_CMSIS.c:9:16:BCD2Dec	1
+../Modules/Src/RTC_CMSIS.c:18:6:RTC_Init	2
+../Modules/Src/RTC_CMSIS.c:152:6:RTC_SetTime	2
+../Modules/Src/RTC_CMSIS.c:188:6:RTC_SetDate	2
+../Modules/Src/RTC_CMSIS.c:222:6:RTC_GetTime	1
+../Modules/Src/RTC_CMSIS.c:246:6:RTC_GetDate	1
+../Modules/Src/RTC_CMSIS.c:266:6:RTC_SetAlarm	2
+../Modules/Src/RTC_CMSIS.c:317:6:RTC_GetTimestamp	2
+../Modules/Src/RTC_CMSIS.c:349:6:RTC_Alarm_IRQHandler	2

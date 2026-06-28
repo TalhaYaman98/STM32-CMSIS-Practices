@@ -16,7 +16,8 @@
 #define SPI_CMSIS             0
 #define SYSTICK_CMSIS         0
 #define DMA_CMSIS             0 // Bağımlılıklar: ADC_CMSIS, UART_CMSIS
-#define WATCHDOG_CMSIS		  1
+#define WATCHDOG_CMSIS		  0
+#define RTC_CMSIS             1
 
 
 /*
@@ -69,6 +70,10 @@
 
 #if WATCHDOG_CMSIS
   #include <Watchdog_CMSIS.h>
+#endif
+
+#if RTC_CMSIS
+  #include <RTC_CMSIS.h>
 #endif
 
 #endif /* HEADERFORALL_H */

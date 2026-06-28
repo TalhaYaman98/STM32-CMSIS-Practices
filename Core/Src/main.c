@@ -51,6 +51,13 @@ volatile uint8_t wwdg_current = 0;
 volatile uint32_t reset_reason = 0;
 volatile uint8_t  test_a_locked = 0;   /* TEST A için: kilitlenme durumu göstergesi */
 #endif
+
+#if RTC_CMSIS
+uint8_t hour, min, sec;
+uint8_t year, month, day, weekday;
+
+uint8_t ts_h, ts_m, ts_s;
+#endif
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -204,6 +211,17 @@ int main(void)
 
   #endif
 #endif
+
+#if RTC_CMSIS
+    RTC_Init();
+
+    // Saat ve tarih ayarla (bir kez yapılır, sonra RTC bağımsız çalışır)
+    RTC_SetTime(14, 30, 0);           // 14:30:00
+    RTC_SetDate(25, 6, 28, 6);        // 2025, Haziran, 28, Cumartesi (6)
+
+    // Alarm: 14:30:10'da tetiklenecek
+    RTC_SetAlarm(14, 30, 10);
+#endif
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -315,6 +333,17 @@ int main(void)
     }
   #endif
 
+#endif
+
+#if RTC_CMSIS
+    // Saat ve tarih oku
+    RTC_GetTime(&hour, &min, &sec);
+    RTC_GetDate(&year, &month, &day, &weekday);
+
+    // Timestamp kontrolü
+    RTC_GetTimestamp(&ts_h, &ts_m, &ts_s);
+
+    HAL_Delay(1000);
 #endif
   }
   /* USER CODE END 3 */
