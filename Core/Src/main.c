@@ -58,6 +58,11 @@ uint8_t year, month, day, weekday;
 
 uint8_t ts_h, ts_m, ts_s;
 #endif
+
+#if FLASH_CMSIS
+uint32_t read_data[4]  = {0};
+uint32_t write_data[4] = {0xDEADBEEF, 0x12345678, 0xAABBCCDD, 0x11223344};
+#endif
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -222,6 +227,20 @@ int main(void)
     // Alarm: 14:30:10'da tetiklenecek
     RTC_SetAlarm(14, 30, 10);
 #endif
+
+#if FLASH_CMSIS
+    // Kullanıcı verisi için Sektör 6 seçildi (0x08040000, 128 KB)
+    // UYARI: Uygulama kodunun bulunduğu sektörü silmeyin!
+
+    // 1. Sektörü sil
+    Flash_EraseSector(6);
+
+    // 2. Veri yaz
+    Flash_WriteBuffer(FLASH_SECTOR6_ADDR, write_data, 4);
+
+    // 3. Veriyi geri oku ve doğrula
+    Flash_ReadBuffer(FLASH_SECTOR6_ADDR, read_data, 4);
+#endif
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -344,6 +363,10 @@ int main(void)
     RTC_GetTimestamp(&ts_h, &ts_m, &ts_s);
 
     HAL_Delay(1000);
+#endif
+
+#if FLASH_CMSIS
+    // Flash işlemleri tamamlandı, ana döngüde ek işlem gerekmez
 #endif
   }
   /* USER CODE END 3 */

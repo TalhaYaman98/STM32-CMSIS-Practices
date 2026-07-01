@@ -79,17 +79,3 @@ void PWM_SetDutyCycle(uint32_t duty) {
     TIM4->CCR1 = (duty * (arr + 1)) / 100;                        // Yeni duty uygula
 }
 
-/*
-int main(void) {
-    Clock_Init();              // 168 MHz clock ayarı
-    gpio_pd12_init();          // PD12 -> TIM4_CH1
-    TIM4_PWM_Init(1000, 50);   // 1 kHz PWM, %50 duty
-
-    while (1) {
-        for (uint32_t d = 10; d <= 90; d += 10) {
-            PWM_SetDutyCycle(d);    // Duty'yi değiştir
-            for (volatile int i = 0; i < 1000000; i++); // Bekleme
-        }
-    }
-}
-*/

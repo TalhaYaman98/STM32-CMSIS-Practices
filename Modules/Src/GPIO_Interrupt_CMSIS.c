@@ -155,14 +155,3 @@ Ek konular / tavsiyeler:
 
 */
 
-/*
-int main(void) {
-    Clock_Init();                                      // Clock'u 168 MHz yap
-    gpio_init();                                       // GPIO ayarları
-    Exti0_Init();                                      // EXTI0 (PA0) ayarları
-
-    while (1) {
-        // Ana döngüde iş yok, kesme tetiklenecek
-    }
-}
-*/

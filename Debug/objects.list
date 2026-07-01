@@ -22,6 +22,7 @@
 "./Modules/Src/Clock_CMSIS.o"
 "./Modules/Src/DAC_CMSIS.o"
 "./Modules/Src/DMA_CMSIS.o"
+"./Modules/Src/Flash_CMSIS.o"
 "./Modules/Src/GPIO_Interrupt_CMSIS.o"
 "./Modules/Src/I2C_CMSIS.o"
 "./Modules/Src/PWM_CMSIS.o"

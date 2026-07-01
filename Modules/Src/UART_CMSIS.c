@@ -111,17 +111,3 @@ void USART2_Send_String(const char *str) {
     }
 }
 
-/*
-int main(void) {
-    Clock_Init();                                             // Sistem saatini başlat
-    gpio_init();                                              // GPIO pinlerini yapılandır
-    USART2_Init();                                            // USART2'yi başlat
-
-    USART2_Send_String("USART2 baglantisi basarili!\r\n");    // Başlangıç mesajı gönder
-
-    while (1) {                                               // Sonsuz döngü
-        char c = USART2_Read_Char();                          // Karakter al
-        USART2_Send_Char(c);                                  // Echo - aldığı karakteri geri gönder
-    }
-}
-*/

@@ -23,19 +23,4 @@ void DAC_Set_Voltage(float voltage) {
     DAC_Write(dac_val);
 }
 
-/*
-int main(void) {
-    Clock_Init();                                           // Sistem saatini ayarla
-    GPIO_PA4_Analog_Init();                                 // PA4 analog mod
-    DAC_Init();                                             // DAC başlat
-
-    while (1) {
-        DAC_Set_Voltage(1.65f);                             // ~1.65V çıkış
-        for (volatile int i = 0; i < 1000000; i++);          // Basit delay
-
-        DAC_Set_Voltage(3.0f);                              // ~3.0V çıkış
-        for (volatile int i = 0; i < 1000000; i++);
-    }
-}
-*/
 

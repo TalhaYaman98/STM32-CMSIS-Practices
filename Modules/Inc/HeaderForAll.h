@@ -17,13 +17,15 @@
 #define SYSTICK_CMSIS         0
 #define DMA_CMSIS             0 // Bağımlılıklar: ADC_CMSIS, UART_CMSIS
 #define WATCHDOG_CMSIS		  0
-#define RTC_CMSIS             1
+#define RTC_CMSIS             0
+#define FLASH_CMSIS           1
 
 
 /*
   Clock — her zaman dahil
 */
 #include <CLOCK_CMSIS.h>
+
 
 /*
  Seçili modüller
@@ -74,6 +76,10 @@
 
 #if RTC_CMSIS
   #include <RTC_CMSIS.h>
+#endif
+
+#if FLASH_CMSIS
+  #include <Flash_CMSIS.h>
 #endif
 
 #endif /* HEADERFORALL_H */

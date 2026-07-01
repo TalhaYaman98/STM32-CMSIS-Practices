@@ -31,8 +31,8 @@ STM32 programlamaya yeni başlayanların donanımın çalışma mantığını **
 | **SysTick** | `SysTick_CMSIS.c/h` | ms/us gecikme, timestamp (GetTick) | ✅ Hazır |
 | **DMA** | `DMA_CMSIS.c/h` | DMA1 UART TX, DMA2 ADC circular transfer | ✅ Hazır |
 | **Watchdog** | `Watchdog_CMSIS.c/h` | IWDG (bağımsız) ve WWDG (pencere) reset koruması | ✅ Hazır |
-| **RTC** | — | Gerçek zamanlı saat, alarm ve zaman damgası | 🔜 Yakında |
-| **Flash** | — | Dahili Flash okuma/yazma, sector silme | 🔜 Yakında |
+| **RTC** | `RTC_CMSIS.c/h` | Gerçek zamanlı saat, alarm ve zaman damgası (HSE/8) | ✅ Hazır |
+| **Flash** | `Flash_CMSIS.c/h` | Dahili Flash okuma/yazma, sektör silme | ✅ Hazır |
 | **Low Power** | — | Sleep, Stop ve Standby güç tasarrufu modları | 🔜 Yakında |
 | **CAN** | — | Controller Area Network haberleşme protokolü | 🔜 Yakında |
 
@@ -54,7 +54,9 @@ STM32-CMSIS-Examples/
 ├── SPI_CMSIS.c / .h              # SPI1 master full-duplex (PA4/PA5/PA6/PA7)
 ├── SysTick_CMSIS.c / .h          # SysTick — ms/us gecikme, GetTick timestamp
 ├── DMA_CMSIS.c / .h              # DMA — UART TX (DMA1 S6 CH4), ADC (DMA2 S0 CH0)
-└── Watchdog_CMSIS.c / .h         # IWDG (LSI) ve WWDG (APB1, pencere mantığı)
+├── Watchdog_CMSIS.c / .h         # IWDG (LSI) ve WWDG (APB1, pencere mantığı)
+├── RTC_CMSIS.c / .h              # RTC — saat/tarih, alarm A, timestamp (HSE/8)
+└── Flash_CMSIS.c / .h            # Flash — sektör silme, 32-bit okuma/yazma
 ```
 
 ### HeaderForAll.h — Modül Seçimi
@@ -73,6 +75,8 @@ Tüm modüller `HeaderForAll.h` içinden merkezi olarak yönetilir. Kullanmak is
 #define SYSTICK_CMSIS         0
 #define DMA_CMSIS             0
 #define WATCHDOG_CMSIS        0
+#define RTC_CMSIS             0
+#define FLASH_CMSIS           0
 ```
 
 `main.c` içindeki başlatma ve döngü kodları bu makrolara göre koşullu derleme (`#if`) ile aktif hale gelir. Clock modülü her zaman dahildir.
@@ -97,6 +101,7 @@ Tüm modüller `HeaderForAll.h` içinden merkezi olarak yönetilir. Kullanmak is
 | SPI SCK | PA5 | SPI1 Saat (AF5) |
 | SPI MISO | PA6 | SPI1 Master In Slave Out (AF5) |
 | SPI MOSI | PA7 | SPI1 Master Out Slave In (AF5) |
+| RTC Timestamp | PC13 | RTC_TAMP1 / RTC_TS — timestamp tetikleme pini |
 
 ## ⏱️ Saat Konfigürasyonu
 
@@ -105,12 +110,13 @@ Tüm örnekler aşağıdaki saat hiyerarşisini kullanır:
 | Bus | Frekans | Notlar |
 |-----|---------|--------|
 | SYSCLK | 168 MHz | HSE (8 MHz) + PLL |
-| AHB (HCLK) | 168 MHz | GPIO, DMA, SysTick |
+| AHB (HCLK) | 168 MHz | GPIO, DMA, SysTick, Flash |
 | APB2 (PCLK2) | 84 MHz | USART1, ADC, SPI1, TIM1 |
 | APB1 (PCLK1) | 42 MHz | I2C, USART2, TIM2/4, WWDG |
 | Timer clock (APB1 × 2) | 84 MHz | TIM2, TIM4 |
 | SysTick clock | 168 MHz | AHB kaynağı seçili (CLKSOURCE = 1) |
 | LSI (IWDG) | ~32 kHz | Sistem clock'undan bağımsız dahili osilatör |
+| RTC clock | 1 MHz | HSE / RTCPRE(8) → PREDIV_A=124, PREDIV_S=7999 → 1 Hz |
 
 ## 🐕 Watchdog Modülü — Detaylar
 
@@ -141,6 +147,51 @@ DBGMCU->APB1FZ |= DBGMCU_APB1_FZ_DBG_IWDG_STOP | DBGMCU_APB1_FZ_DBG_WWDG_STOP;
 ```
 Bu satır olmadan, debugger CPU'yu durdurduğunda watchdog sayaçları çalışmaya devam eder ve beklenmedik resetlere yol açar.
 
+## 🕐 RTC Modülü — Detaylar
+
+### Clock Kaynağı
+- **HSE / RTCPRE(8) = 1 MHz** → PREDIV_A=124, PREDIV_S=7999 → **1 Hz ck_spre**
+- Backup domain'de çalışır; VDD kesilse bile VBAT pinine pil bağlanırsa saat korunur.
+
+### Fonksiyonlar
+- `RTC_Init()` — Clock kaynağı, prescaler, 24h format, timestamp yapılandırması. RTC zaten çalışıyorsa (RTCEN=1) init atlanır, saat korunur.
+- `RTC_SetTime(hour, min, sec)` / `RTC_SetDate(year, month, day, weekday)` — BCD dönüşümü ile TR/DR register'larına yazar.
+- `RTC_GetTime()` / `RTC_GetDate()` — Shadow register'lardan okur. GetTime() ardından GetDate() çağrılmalıdır (tutarlılık).
+- `RTC_SetAlarm(hour, min, sec)` — Alarm A, EXTI Line 17 + NVIC ile interrupt desteği.
+- `RTC_GetTimestamp(hour, min, sec)` — TSF flag kontrolü ile TSTR'dan timestamp okur.
+
+### BCD Formatı
+RTC register'ları BCD (Binary Coded Decimal) formatında çalışır. Fonksiyonlar decimal↔BCD dönüşümünü otomatik yapar.
+
+## 💾 Flash Modülü — Detaylar
+
+### Sektör Haritası (STM32F407, 1 MB)
+
+| Sektör | Adres Başlangıcı | Boyut | Önerilen Kullanım |
+|--------|-----------------|-------|-------------------|
+| 0 | `0x08000000` | 16 KB | Uygulama kodu (interrupt vector) |
+| 1–3 | `0x08004000` | 16 KB | Uygulama kodu |
+| 4 | `0x08010000` | 64 KB | Uygulama kodu |
+| 5 | `0x08020000` | 128 KB | Uygulama kodu |
+| 6–11 | `0x08040000+` | 128 KB | **Kullanıcı verisi** |
+
+### Fonksiyonlar
+- `Flash_Unlock()` / `Flash_Lock()` — 0x45670123 + 0xCDEF89AB anahtar çifti ile kilit açma/kapama.
+- `Flash_EraseSector(sector)` — Belirtilen sektörü siler (tüm bitler 1 olur). Yazmadan önce zorunludur.
+- `Flash_WriteWord(address, data)` — 32-bit (word) yazma, PG bit kontrolü ile.
+- `Flash_WriteBuffer(address, data, length)` — Ardışık 32-bit veri dizisi yazma.
+- `Flash_ReadWord(address)` — 32-bit okuma (unlock gerektirmez).
+- `Flash_ReadBuffer(address, data, length)` — Ardışık 32-bit veri dizisi okuma.
+
+### Kritik Uyarılar
+> ⚠️ Sektör **0–5 silinmemelidir** — uygulama kodu bu sektörlerde bulunur, silinirse sistem çöker.
+
+> ⚠️ Flash'a yazmadan önce o adres **mutlaka silinmiş** olmalıdır. 0→1 yazımı mümkün değildir.
+
+> ⚠️ Aynı adrese **iki kez yazma** ECC hatasına yol açar. Her yazma öncesi sektör silinmelidir.
+
+> ⚠️ PSIZE = 32-bit (VDD = 3.3V) seçilmiştir. Farklı voltajda çalışıyorsanız PSIZE değerini güncelleyin.
+
 ## ⚠️ Önemli Notlar
 
 - Bu örnekler **eğitim amaçlıdır** ve ticari projelerde kullanılmadan önce test edilmelidir
@@ -151,7 +202,8 @@ Bu satır olmadan, debugger CPU'yu durdurduğunda watchdog sayaçları çalışm
 - SPI modülünde PA4 hem DAC çıkışı hem CS pini olarak atanmıştır; DAC ve SPI aynı anda kullanılmamalıdır
 - SysTick modülü HAL ile birlikte çalışır; `stm32f4xx_it.c` içindeki `SysTick_Handler`'a `tick_count++` eklenmelidir
 - DMA modülü UART ve ADC modüllerine bağımlıdır; birlikte aktif edilmelidir
-- WWDG_Refresh() çağrılırken sayaç ve WDGA biti **tek yazma işleminde** birlikte yazılmalıdır; iki adımlı (`&=` sonra `|=`) yazım T6 bitinin anlık 0 olmasına ve anında resete yol açar
+- WWDG_Refresh() çağrılırken sayaç ve WDGA biti **tek yazma işleminde** birlikte yazılmalıdır; iki adımlı yazım T6 bitinin anlık 0 olmasına ve anında resete yol açar
+- RTC modülü backup domain'de çalışır; `PWR_CR_DBP` biti set edilmeden RTC register'larına yazılamaz
 
 ## 📚 Faydalı Kaynaklar
 

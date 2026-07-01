@@ -212,23 +212,6 @@ ISR içinde hangi kontrol/temizleme/işlemler neden ve hangi sırayla yapılmal�
 */
 
 /*
-int main(void)
-{
-
-	Clock_Init();
-    gpio_pd12_init(); // Initialize GPIO PD12
-    TIM2_1HZ_Init();  // Initialize TIM2 for 1 Hz update interrupts
-
-    while (1)
-    {
-        __WFI();  // Wait For Interrupt - puts core to sleep until an interrupt occurs
-    }
-
-    return 0;
-}
-*/
-
-/*
 
 İyileştirme önerileri (pratik ipuçları)
 	EGR = UG: PSC/ARR’ı yazdıktan sonra TIM2->EGR = TIM_EGR_UG; kullanarak yeni değerlerin anında yansıtılmasını sağlayın.

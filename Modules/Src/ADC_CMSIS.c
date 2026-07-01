@@ -113,18 +113,3 @@ Ek tavsiyeler:
 	Yazılımda timeout mekanizması eklemek iyi bir güvenlik pratiğidir (sonsuz döngüden kurtarmak için).
 
 */
-
-/*
-int main(void) {
-
-    Clock_Init();             // Sistemi 168 MHz'e ayarla
-    GPIO_PA0_Analog_Init();   // PA0 pinini analog moda al
-    ADC1_Init();              // ADC1 modülünü yapılandır
-
-    while (1) {
-        adc_value = ADC1_Read();  // ADC ölçümünü al
-        // Burada adc_value değişkenini istediğiniz gibi işleyebilirsiniz
-        // Örn: UART ile gönderme veya LED parlaklığı ayarı
-    }
-}
-*/

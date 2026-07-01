@@ -1,0 +1,7 @@
+../Modules/Src/Flash_CMSIS.c:5:6:Flash_Unlock	2
+../Modules/Src/Flash_CMSIS.c:34:6:Flash_Lock	1
+../Modules/Src/Flash_CMSIS.c:52:6:Flash_EraseSector	3
+../Modules/Src/Flash_CMSIS.c:118:10:Flash_ReadWord	1
+../Modules/Src/Flash_CMSIS.c:144:6:Flash_ReadBuffer	2
+../Modules/Src/Flash_CMSIS.c:161:6:Flash_WriteWord	3
+../Modules/Src/Flash_CMSIS.c:214:6:Flash_WriteBuffer	2
